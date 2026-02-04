@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>❤️ Senpai, Notice Me! ❤️</title>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Pangolin&family=Poppins:wght@600;700;800&display=swap');
+
+    :root {
+      --sakura-pink: #ffb7c5;
+      --anime-red: #ff6b9d;
+      --sky-blue: #a7d8ff;
+      --sunshine: #ffd700;
+    }
+
+    * { 
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100svh;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, #ffeef8 0%, #ffb7c5 50%, #ffa0c0 100%);
+      font-family: 'Poppins', sans-serif;
+      overflow: hidden;
+      padding: 20px;
+      position: relative;
+    }
+
+    /* Falling sakura petals */
+    .sakura-container {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .sakura {
+      position: absolute;
+      font-size: 20px;
+      animation: fall linear infinite;
+      opacity: 0.6;
+    }
+
+    @keyframes fall {
+      0% {
+        transform: translateY(-10vh) rotate(0deg);
+      }
+      100% {
+        transform: translateY(110vh) rotate(360deg);
+      }
+    }
+
+    /* Floating hearts */
+    .heart-float {
+      position: absolute;
+      animation: floatUp 5s ease-in-out infinite;
+      opacity: 0;
+    }
+
+    @keyframes floatUp {
+      0% {
+        transform: translateY(0) scale(1);
+        opacity: 0;
+      }
+      50% {
+        opacity: 0.6;
+      }
+      100% {
+        transform: translateY(-100px) scale(1.5);
+        opacity: 0;
+      }
+    }
+
+    #confettiCanvas {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    .manga-panel {
+      width: min(550px, 92vw);
+      background: white;
+      border: 6px solid #333;
+      border-radius: 0;
+      padding: 35px 25px;
+      box-shadow: 
+        8px 8px 0 rgba(0,0,0,0.2),
+        0 20px 50px rgba(0,0,0,0.3);
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Speech bubble decoration */
+    .speech-bubble {
+      position: absolute;
+      top: -40px;
+      right: 30px;
+      background: white;
+      border: 3px solid #333;
+      border-radius: 20px;
+      padding: 10px 20px;
+      font-weight: 700;
+      font-size: clamp(12px, 2.5vw, 16px);
+      box-shadow: 4px 4px 0 rgba(0,0,0,0.1);
+    }
+
+    .speech-bubble::after {
+      content: "";
+      position: absolute;
+      bottom: -15px;
+      right: 20px;
+      width: 0;
+      height: 0;
+      border-left: 15px solid transparent;
+      border-right: 0 solid transparent;
+      border-top: 15px solid #333;
+    }
+
+    .speech-bubble::before {
+      content: "";
+      position: absolute;
+      bottom: -10px;
+      right: 22px;
+      width: 0;
+      height: 0;
+      border-left: 12px solid transparent;
+      border-right: 0 solid transparent;
+      border-top: 12px solid white;
+      z-index: 1;
+    }
+
+    /* Kawaii character */
+    .kawaii-character {
+      width: 140px;
+      height: 140px;
+      margin: 0 auto 20px;
+      position: relative;
+    }
+
+    /* Face */
+    .face {
+      width: 120px;
+      height: 120px;
+      background: #ffe5cc;
+      border: 4px solid #333;
+      border-radius: 50%;
+      position: absolute;
+      left: 10px;
+      top: 10px;
+      animation: bounce 2s ease-in-out infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    /* Eyes */
+    .eye {
+      width: 18px;
+      height: 25px;
+      background: #333;
+      border-radius: 50%;
+      position: absolute;
+      top: 40px;
+    }
+
+    .eye-left { left: 30px; }
+    .eye-right { right: 30px; }
+
+    /* Sparkle in eyes */
+    .sparkle {
+      width: 6px;
+      height: 6px;
+      background: white;
+      border-radius: 50%;
+      position: absolute;
+      top: 5px;
+      left: 5px;
+    }
+
+    /* Blush */
+    .blush {
+      width: 20px;
+      height: 12px;
+      background: var(--sakura-pink);
+      border-radius: 50%;
+      position: absolute;
+      top: 55px;
+      opacity: 0.6;
+    }
+
+    .blush-left { left: 15px; }
+    .blush-right { right: 15px; }
+
+    /* Mouth */
+    .mouth {
+      width: 30px;
+      height: 15px;
+      border: 3px solid #333;
+      border-top: none;
+      border-radius: 0 0 50px 50px;
+      position: absolute;
+      bottom: 35px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    /* Anime hair */
+    .hair {
+      position: absolute;
+      top: -5px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 60px;
+    }
+
+    h1 {
+      font-family: 'Pangolin', cursive;
+      font-size: clamp(28px, 5.5vw, 44px);
+      color: var(--anime-red);
+      margin: 20px 0 10px;
+      line-height: 1.3;
+      text-shadow: 3px 3px 0 rgba(0,0,0,0.1);
+    }
+
+    .anime-text {
+      font-size: clamp(14px, 3vw, 18px);
+      color: #333;
+      font-weight: 700;
+      margin-bottom: 25px;
+    }
+
+    .sparkles {
+      color: var(--sunshine);
+      animation: twinkle 1s ease-in-out infinite;
+    }
+
+    @keyframes twinkle {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.6; transform: scale(1.2); }
+    }
+
+    .battle-zone {
+      position: relative;
+      height: 200px;
+      margin: 25px 0;
+      background: 
+        repeating-linear-gradient(
+          45deg,
+          #fff 0px,
+          #fff 10px,
+          #ffe6f0 10px,
+          #ffe6f0 20px
+        );
+      border: 4px solid #333;
+      border-radius: 0;
+      padding: 20px;
+      overflow: hidden;
+      box-shadow: inset 0 0 20px rgba(0,0,0,0.05);
+    }
+
+    button {
+      position: absolute;
+      padding: 16px 32px;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 800;
+      font-size: clamp(16px, 3.5vw, 20px);
+      border: 4px solid #333;
+      border-radius: 0;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      box-shadow: 5px 5px 0 rgba(0,0,0,0.3);
+      text-transform: uppercase;
+    }
+
+    #yesBtn {
+      left: 10%;
+      top: 50%;
+      transform: translateY(-50%);
+      background: var(--anime-red);
+      color: white;
+    }
+
+    #yesBtn:hover {
+      transform: translateY(-50%) translateY(-3px);
+      box-shadow: 5px 8px 0 rgba(0,0,0,0.3);
+    }
+
+    #yesBtn:active {
+      transform: translateY(-50%) translateY(0);
+      box-shadow: 2px 2px 0 rgba(0,0,0,0.3);
+    }
+
+    #noBtn {
+      right: 10%;
+      top: 50%;
+      transform: translateY(-50%);
+      background: #ddd;
+      color: #333;
+    }
+
+    /* Teleport effect */
+    .teleport {
+      animation: teleportFlash 0.3s ease;
+    }
+
+    @keyframes teleportFlash {
+      0% { opacity: 1; }
+      50% { opacity: 0; transform: scale(0.5); }
+      100% { opacity: 1; }
+    }
+
+    .hint {
+      font-size: clamp(11px, 2.5vw, 14px);
+      color: #666;
+      margin-top: 15px;
+      font-weight: 700;
+    }
+
+    .result {
+      display: none;
+      animation: animeReveal 1s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    }
+
+    @keyframes animeReveal {
+      0% {
+        opacity: 0;
+        transform: scale(0) rotate(-180deg);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1) rotate(0deg);
+      }
+    }
+
+    .result h2 {
+      font-family: 'Pangolin', cursive;
+      font-size: clamp(32px, 6vw, 52px);
+      color: var(--anime-red);
+      margin: 20px 0;
+      text-shadow: 4px 4px 0 rgba(0,0,0,0.1);
+    }
+
+    .celebration {
+      font-size: clamp(16px, 3.5vw, 22px);
+      color: #333;
+      line-height: 1.8;
+      margin-top: 20px;
+      font-weight: 600;
+    }
+
+    .big-emoji {
+      font-size: clamp(70px, 12vw, 120px);
+      display: block;
+      margin: 25px 0;
+      animation: spin 2s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+      0%, 100% { transform: rotate(-10deg); }
+      50% { transform: rotate(10deg); }
+    }
+
+    /* Speed lines effect */
+    .speed-lines {
+      position: absolute;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(to right, transparent, #333, transparent);
+      opacity: 0;
+      animation: speedLine 0.5s ease;
+    }
+
+    @keyframes speedLine {
+      0% {
+        opacity: 0;
+        transform: translateX(-100%);
+      }
+      50% {
+        opacity: 0.3;
+      }
+      100% {
+        opacity: 0;
+        transform: translateX(100%);
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Sakura petals -->
+  <div class="sakura-container" id="sakuraContainer"></div>
+  
+  <canvas id="confettiCanvas"></canvas>
+
+  <main class="manga-panel">
+    <div class="speech-bubble">Senpai! >///<</div>
+
+    <!-- Kawaii Character -->
+    <div class="kawaii-character">
+      <div class="hair">💗</div>
+      <div class="face">
+        <div class="eye eye-left">
+          <div class="sparkle"></div>
+        </div>
+        <div class="eye eye-right">
+          <div class="sparkle"></div>
+        </div>
+        <div class="blush blush-left"></div>
+        <div class="blush blush-right"></div>
+        <div class="mouth"></div>
+      </div>
+    </div>
+
+    <h1>Senpai, Notice Me!</h1>
+    <h1>Be My Valentine? (੭｡╹▿╹｡)੭</h1>
+    <p class="anime-text">
+      <span class="sparkles">✨ ✨ ✨</span><br/>
+      You're my main character!
+    </p>
+
+    <div class="battle-zone" id="battleZone">
+      <button id="yesBtn">Hai! ❤️</button>
+      <button id="noBtn">Iie...</button>
+    </div>
+
+    <div class="hint" id="hint">
+      Watch "No" use anime teleport! ⚡
+    </div>
+
+    <div class="result" id="result">
+      <h2>KYAAAAA~! (ﾉ◕ヮ◕)ﾉ*:･ﾟ✧</h2>
+      <span class="big-emoji">🌸💕🎌</span>
+      <div class="celebration">
+        Our love story is better<br/>
+        than any anime!<br/>
+        <strong style="color: var(--anime-red);">Happy Valentine's Day!</strong><br/>
+        <div style="margin-top: 10px; font-size: clamp(14px, 3vw, 18px);">
+          ♡ (˘▽˘>ԅ( ˘⌣˘)
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Generate sakura petals
+    const sakuraContainer = document.getElementById("sakuraContainer");
+    for (let i = 0; i < 20; i++) {
+      const petal = document.createElement("div");
+      petal.className = "sakura";
+      petal.textContent = "🌸";
+      petal.style.left = Math.random() * 100 + "%";
+      petal.style.animationDuration = (Math.random() * 10 + 8) + "s";
+      petal.style.animationDelay = Math.random() * 5 + "s";
+      sakuraContainer.appendChild(petal);
+    }
+
+    const battleZone = document.getElementById("battleZone");
+    const yesBtn = document.getElementById("yesBtn");
+    const noBtn = document.getElementById("noBtn");
+    const result = document.getElementById("result");
+    const hint = document.getElementById("hint");
+
+    /* CONFETTI */
+    const confettiCanvas = document.getElementById("confettiCanvas");
+    
+    function resizeConfettiCanvas() {
+      const dpr = Math.max(1, window.devicePixelRatio || 1);
+      confettiCanvas.width = Math.floor(window.innerWidth * dpr);
+      confettiCanvas.height = Math.floor(window.innerHeight * dpr);
+    }
+
+    resizeConfettiCanvas();
+    window.addEventListener("resize", resizeConfettiCanvas);
+
+    const confettiInstance = confetti.create(confettiCanvas, {
+      resize: false,
+      useWorker: true
+    });
+
+    function animeConfetti() {
+      const colors = ['#ffb7c5', '#ff6b9d', '#ffd700', '#a7d8ff'];
+      const end = Date.now() + 3000;
+
+      (function frame() {
+        confettiInstance({
+          particleCount: 5,
+          angle: Math.random() * 360,
+          spread: 100,
+          origin: { 
+            x: Math.random(), 
+            y: Math.random() * 0.8
+          },
+          colors: colors,
+          shapes: ['circle', 'square'],
+          scalar: 1.2
+        });
+        if (Date.now() < end) {
+          requestAnimationFrame(frame);
+        }
+      })();
+    }
+
+    /* YES BUTTON GROWS */
+    let yesScale = 1;
+    function growYes() {
+      yesScale = Math.min(1.7, yesScale + 0.08);
+      yesBtn.style.transform = `translateY(-50%) scale(${yesScale})`;
+    }
+
+    /* NO BUTTON ANIME TELEPORT */
+    function animeTeleport(px, py) {
+      const b = battleZone.getBoundingClientRect();
+      const btn = noBtn.getBoundingClientRect();
+      
+      const distance = Math.hypot(
+        (btn.left + btn.width / 2) - px,
+        (btn.top + btn.height / 2) - py
+      );
+
+      if (distance < 140) {
+        // Add teleport animation
+        noBtn.classList.add('teleport');
+        
+        // Create speed lines effect
+        const speedLine = document.createElement('div');
+        speedLine.className = 'speed-lines';
+        speedLine.style.top = (btn.top - b.top) + 'px';
+        battleZone.appendChild(speedLine);
+        
+        setTimeout(() => {
+          speedLine.remove();
+        }, 500);
+        
+        // Teleport to random location
+        setTimeout(() => {
+          let newRight = Math.random() * 60 + 5;
+          let newTop = Math.random() * 60 + 20;
+          
+          noBtn.style.right = newRight + "%";
+          noBtn.style.top = newTop + "%";
+          
+          noBtn.classList.remove('teleport');
+        }, 150);
+        
+        growYes();
+      }
+    }
+
+    battleZone.addEventListener("pointermove", e => {
+      animeTeleport(e.clientX, e.clientY);
+    });
+
+    noBtn.addEventListener("click", e => e.preventDefault());
+
+    /* YES CLICK */
+    yesBtn.addEventListener("click", () => {
+      battleZone.style.display = "none";
+      hint.style.display = "none";
+      result.style.display = "block";
+      resizeConfettiCanvas();
+      animeConfetti();
+    });
+  </script>
+</body>
+</html>
